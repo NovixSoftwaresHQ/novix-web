@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Novix Softwares | Software Development Company in India</title>
+    <meta name="description" content="Novix Softwares builds custom software, web and mobile apps, ERP/CRM platforms and AI automation for businesses in India and around the world." />
+    <meta name="theme-color" content="#F7F5F0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/uploads/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/uploads/favicon-512.png" />
+    <link rel="apple-touch-icon" href="/uploads/apple-touch-icon.png" />
+    <!-- Without JavaScript, show content that would otherwise wait for a scroll animation. -->
+    <noscript><style>#root [data-reveal], #root [style*="opacity:0"] { opacity: 1 !important; transform: none !important; height: auto !important; } .build * { animation: none !important; }</style></noscript>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      // Apply the saved or system theme before first paint (no flash). Keep the key in sync with ThemeContext.
+      (function () {
+        var saved = null
+        try { saved = localStorage.getItem('novix-theme') } catch (e) {}
+        var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+        document.querySelector('meta[name="theme-color"]').content = dark ? '#121212' : '#F7F5F0'
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

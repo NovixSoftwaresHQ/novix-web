@@ -1,0 +1,7 @@
+"Interactive Character Follow" by alinazari
+https://rive.app/marketplace/28334-53514-interactive-character-follow/
+Licensed under Creative Commons Attribution 4.0 International: https://creativecommons.org/licenses/by/4.0/
+
+novix-character.riv and character-neutral.png are adapted from that work (26 November 2026):
+recoloured green, blink plays once instead of looping, quicker left/right head turn.
+The poster shows the character artboard only, without the original preview background.

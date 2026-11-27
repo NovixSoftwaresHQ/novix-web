@@ -1,0 +1,22 @@
+// 19 blog category and tag archive routes.
+export const archives = [
+  { path: "/blog/tag/ai-agents", title: "AI Agents Articles" },
+  { path: "/blog/tag/llm-automation", title: "LLM Automation Articles" },
+  { path: "/blog/tag/microservices", title: "Microservices Articles" },
+  { path: "/blog/tag/plumbing-crm", title: "Plumbing CRM Articles" },
+  { path: "/blog/tag/us-home-services", title: "US Home Services Articles" },
+  { path: "/blog/tag/field-service-management", title: "Field Service Management Articles" },
+  { path: "/blog/tag/rag-architecture", title: "Rag Architecture Articles" },
+  { path: "/blog/tag/python", title: "Python Articles" },
+  { path: "/blog/tag/cloud-native", title: "Cloud Native Articles" },
+  { path: "/blog/tag/cybersecurity", title: "Cybersecurity Articles" },
+  { path: "/blog/category/ai-automation", title: "AI Automation Articles" },
+  { path: "/blog/category/crm-enterprise-erp-systems", title: "CRM Enterprise ERP Systems Articles" },
+  { path: "/blog/tag/trade-business-software", title: "Trade Business Software Articles" },
+  { path: "/blog/tag/lead-generation", title: "Lead Generation Articles" },
+  { path: "/blog/tag/housecall-pro", title: "Housecall Pro Articles" },
+  { path: "/blog/tag/servicetitan", title: "Servicetitan Articles" },
+  { path: "/blog/tag/jobber", title: "Jobber Articles" },
+  { path: "/blog/tag/local-seo-for-plumbers", title: "Local SEO For Plumbers Articles" },
+  { path: "/blog/tag/emergency-dispatching", title: "Emergency Dispatching Articles" },
+]

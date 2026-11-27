@@ -1,0 +1,12 @@
+# The same line endings everywhere (macOS, Windows and the Linux build servers)
+* text=auto eol=lf
+
+# Binary files: never convert them
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.mp4 binary
+*.riv binary
+*.woff2 binary
