@@ -4,6 +4,12 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # SITE_URL is a public origin that the build writes into every page (canonical tags, sitemap,
+  # robots.txt). If it is ever marked as a secret, Netlify's secrets scanning finds it in the
+  # output and fails the build, so it is excluded from scanning. Other secrets are still scanned.
+  SECRETS_SCAN_OMIT_KEYS = "SITE_URL"
+
 # Fingerprinted build files never change, so browsers may cache them for a year.
 [[headers]]
   for = "/assets/*"

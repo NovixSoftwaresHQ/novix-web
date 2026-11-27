@@ -26,7 +26,7 @@ No functions, adapter, SPA rewrite or prerender extension is needed. Every route
 
 | Variable | Value | Scope and notes |
 |---|---|---|
-| `SITE_URL` | The confirmed origin, e.g. `https://novixsoftwares.com` | Required in Production. Setting it is your confirmation. HTTPS, no path |
+| `SITE_URL` | The confirmed origin, e.g. `https://novixsoftwares.com` | Required in Production. Setting it is your confirmation. HTTPS, no path. Not a secret: it appears on every page, so don't mark it as containing secret values (`netlify.toml` excludes it from secrets scanning) |
 | `REDIRECT_ALIASES` | `true` | Add only after step 5 works |
 
 Netlify sets `CONTEXT` and `SITE_NAME` itself. Do not set `RELEASE` in Netlify.
