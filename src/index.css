@@ -1,0 +1,536 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens as "R G B" channels, so Tailwind opacity modifiers work (bg-primary/10). */
+@layer base {
+  /*
+   * Light: Warm Ivory + Deep Teal.
+   * `primary` is the accent (links, icons, lines). `action` is the fill of buttons, tabs and filters.
+   * Every token must be set in both blocks, or nested .dark areas inherit the light value.
+   */
+  :root {
+    --page: 247 245 240;          /* #F7F5F0 */
+    --surface: 255 255 255;       /* #FFFFFF */
+    --subtle: 240 237 229;        /* #F0EDE5 */
+    --heading: 24 35 33;          /* #182321 */
+    --body: 82 98 93;             /* #52625D */
+    --edge: 226 222 212;          /* #E2DED4 */
+    --primary: 15 118 110;        /* #0F766E */
+    --primary-hover: 17 94 89;    /* #115E59 */
+    --on-primary: 255 255 255;    /* #FFFFFF */
+    --tint: 232 243 239;          /* #E8F3EF */
+    --raised: 240 237 229;        /* #F0EDE5  hover fill */
+    --action: 15 118 110;         /* #0F766E */
+    --action-hover: 17 94 89;     /* #115E59 */
+    --action-edge: 15 118 110;
+    --action-edge-hover: 17 94 89;
+    --on-action: 255 255 255;
+    --edge-hover: 15 118 110;     /* border of a hovered card or secondary button */
+    --card-hover-alpha: .7;
+    --card-shadow-alpha: .35;
+    --control-edge: 226 222 212;  /* #E2DED4  form fields */
+    --placeholder-alpha: .7;
+    --danger: 225 29 72;          /* #E11D48 */
+    --shadow-color: 11 18 32;
+    --glow-alpha: .1;
+  }
+
+  /* Dark: neutral charcoal + restrained green. Also used by always-dark bands via a nested .dark wrapper. */
+  .dark {
+    --page: 18 18 18;             /* #121212 */
+    --surface: 28 28 28;          /* #1C1C1C */
+    --subtle: 23 23 23;           /* #171717 */
+    --heading: 237 237 237;       /* #EDEDED */
+    --body: 168 168 168;          /* #A8A8A8 */
+    --edge: 46 46 46;             /* #2E2E2E */
+    --primary: 76 195 138;        /* #4CC38A */
+    --primary-hover: 111 214 164; /* #6FD6A4 */
+    --on-primary: 11 26 18;       /* #0B1A12 */
+    --tint: 23 37 30;             /* #17251E */
+    --raised: 39 39 39;           /* #272727 */
+    --action: 31 111 74;          /* #1F6F4A */
+    --action-hover: 35 121 79;    /* #23794F */
+    --action-edge: 58 157 110;    /* #3A9D6E */
+    --action-edge-hover: 76 195 138;
+    --on-action: 255 255 255;
+    --edge-hover: 92 92 92;       /* #5C5C5C */
+    --card-hover-alpha: 1;
+    --card-shadow-alpha: 0;
+    --control-edge: 110 110 110;  /* #6E6E6E */
+    --placeholder-alpha: .85;
+    --danger: 248 113 113;        /* #F87171 */
+    --shadow-color: 0 0 0;
+    --glow-alpha: .05;
+  }
+
+  /* Keeps anchor targets and keyboard focus clear of the sticky header: one row, or two between phones and `wide`. */
+  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+  @media (min-width: 640px) { html { scroll-padding-top: 8.5rem; } }
+  @media (min-width: 64rem) { html { scroll-padding-top: 5.5rem; } }
+  body { @apply bg-page font-sans text-body antialiased; overflow-wrap: break-word; }
+  h1, h2, h3, h4 { @apply text-heading; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-primary; outline-style: solid; }
+  ::selection { @apply bg-primary/25; }
+}
+
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-page px-5 sm:px-6 lg:px-8; }
+  .section { @apply py-14 lg:py-20; }
+  .surface-alt { @apply bg-subtle; }
+  .card { @apply rounded-card border border-edge bg-surface shadow-card; }
+  .icon-tile { @apply grid h-10 w-10 shrink-0 place-items-center rounded-control border border-edge bg-tint text-primary; }
+  .field {
+    @apply mt-1.5 w-full rounded-control border border-control-edge bg-surface px-3.5 py-2.5 text-sm text-heading
+      transition hover:border-body/60 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20
+      disabled:cursor-not-allowed disabled:bg-subtle disabled:opacity-70
+      aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/20;
+  }
+  .field::placeholder { color: rgb(var(--body) / var(--placeholder-alpha)); }
+
+  /* Heading weight and tracking; each template keeps its own sizes. */
+  .heading-display { @apply font-semibold tracking-[-0.03em]; }
+  .heading-section { @apply font-semibold tracking-tight; }
+
+  /* The soft accent glow behind hero backdrops. */
+  .accent-glow { background-color: rgb(var(--primary) / var(--glow-alpha)); }
+}
+
+/*
+ * Micro-interactions. They use the `translate` property, which stacks safely with
+ * the `transform` that Framer Motion writes during reveals.
+ */
+.card-interactive {
+  transition: translate .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.card-interactive:focus-visible,
+.card-interactive:has(:focus-visible) {
+  translate: 0 -3px;
+  border-color: rgb(var(--primary));
+  box-shadow: 0 16px 32px -22px rgb(var(--primary) / var(--card-shadow-alpha));
+}
+.nudge { transition: translate .2s ease, opacity .2s ease, color .2s ease; }
+.group:focus-visible .nudge,
+.group:has(:focus-visible) .nudge { translate: 4px 0; }
+@media (hover: hover) {
+  .card-interactive:hover {
+    translate: 0 -3px;
+    border-color: rgb(var(--edge-hover) / var(--card-hover-alpha));
+    box-shadow: 0 16px 32px -22px rgb(var(--primary) / var(--card-shadow-alpha));
+  }
+  .group:hover .nudge { translate: 4px 0; }
+}
+
+/* Header symbol: the N is drawn once when the page loads. */
+.brand-stroke { stroke-dasharray: 1; animation: brand-draw .6s cubic-bezier(.4, 0, .2, 1) .1s 1 both; }
+@keyframes brand-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+/*
+ * "From idea to working software" (About page): one 3-second sequence. Every part waits on its
+ * first frame until the figure gets data-play. --at is its start time, --dur its length.
+ */
+.build-fade, .build-rise, .build-draw, .build-pop, .build-check path {
+  animation-duration: var(--dur, .4s); animation-delay: var(--at, 0s); animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  animation-fill-mode: both; animation-iteration-count: 1; animation-play-state: paused;
+}
+.build[data-play] :is(.build-fade, .build-rise, .build-draw, .build-pop, .build-check path) { animation-play-state: running; }
+.build-fade { animation-name: build-fade; }
+.build-rise { animation-name: build-rise; }
+.build-draw { animation-name: build-draw; stroke-dasharray: 1; animation-timing-function: ease-in-out; }
+.build-pop { animation-name: build-pop; --dur: .35s; transform-box: fill-box; transform-origin: center; }
+/* the checkmark finishes the sequence at exactly 3s */
+.build-check path { animation-name: build-check; stroke-dasharray: 30; --at: 2.65s; --dur: .35s; }
+@keyframes build-fade { from { opacity: 0; } }
+/* 8 drawing units, about 8px on screen at full size */
+@keyframes build-rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes build-draw { 0% { stroke-dashoffset: 1; opacity: 0; } 1% { opacity: 1; } 100% { stroke-dashoffset: 0; } }
+@keyframes build-pop { from { opacity: 0; transform: scale(.6); } }
+@keyframes build-check { from { stroke-dashoffset: 30; opacity: 0; } 1% { opacity: 1; } to { stroke-dashoffset: 0; } }
+
+/*
+ * Mascots. Both are decorative. In dark mode a thin sage edge keeps their forest-green outlines readable.
+ */
+.dark .mascot-art:not(div), .dark div.mascot-art :is(img, canvas) {
+  filter: drop-shadow(0 0 1px #C6D6CB) drop-shadow(0 0 1px rgb(198 214 203 / .75));
+}
+
+/* About: a fixed slot. The live canvas is larger than the slot and offset to the same crop as the poster
+   (square of 500 artboard units at x 275, y 200, in a 1000-unit artboard). The offsets come out as whole
+   pixels at both slot sizes, so the figure does not shift when the canvas replaces the poster. */
+.mascot-slot { position: relative; width: 7.5rem; height: 7.5rem; overflow: hidden; pointer-events: none; }
+@media (min-width: 1024px) { .mascot-slot { width: 8.75rem; height: 8.75rem; } }
+.mascot-canvas { position: absolute; width: 200%; height: 200%; left: -55%; top: -40%; }
+.mascot-canvas > div { width: 100%; height: 100%; }
+
+/*
+ * The robot, on every page: pops up in the bottom-left corner and stays until it is clicked. It lives in either
+ * bottom corner (data-side) and walks along the bottom of the window (the `translate` property, both set by
+ * robotLife.js) when there is room. Its box lets clicks through to the page; only the drawing takes them.
+ * From 1440px up it fits in the page's side margin.
+ */
+.mascot-robot {
+  position: fixed; z-index: 30; left: max(8px, env(safe-area-inset-left)); bottom: max(8px, env(safe-area-inset-bottom));
+  width: 104px; height: 129px; pointer-events: none;
+  animation: robot-pop .7s cubic-bezier(.22, 1, .36, 1) both;
+}
+/* Narrower windows have little or no side margin to stand in, so it is a little smaller there. */
+@media (max-width: 1439.98px) { .mascot-robot { width: 84px; height: 104px; } }
+/* Just under 1440px the margin is narrow but still there (even beside a scrollbar): hugging the edge, it fits. */
+@media (min-width: 1364px) and (max-width: 1439.98px) { .mascot-robot { left: -7px; width: 76px; height: 94px; } }
+/* The right corner mirrors the left. */
+.mascot-robot[data-side='right'] { left: auto; right: max(8px, env(safe-area-inset-right)); }
+@media (min-width: 1364px) and (max-width: 1439.98px) { .mascot-robot[data-side='right'] { right: -7px; } }
+.robot-button { display: block; width: 100%; height: 100%; padding: 0; background: none; border: 0; border-radius: 28px; cursor: pointer; }
+.robot-art { width: 100%; height: 100%; overflow: visible; transform-origin: 50% 100%; transition: transform .2s cubic-bezier(.34, 1.56, .64, 1); }
+.robot-figure { pointer-events: auto; transform-origin: 50px 120px; }
+.robot-shadow { transform-origin: 50px 121px; }
+.robot-head, .robot-lean { transform-origin: 50px 68px; }
+.robot-eyes { transform-origin: 50px 43px; }
+.robot-bulb { transform-origin: 50px 10px; }
+.robot-arm { transform-origin: 70px 82px; }
+.robot-arm-left { transform-origin: 30px 82px; }
+.robot-arm, .robot-arm-left { transition: transform .25s ease-out; }
+.robot-grin, .robot-happy, .robot-flames { opacity: 0; }
+.robot-flames { pointer-events: none; }
+.robot-flame { transform-box: fill-box; transform-origin: 50% 0; }
+.robot-button { transition: transform .3s ease; }
+
+/* Walking: the legs step, the body bobs and the arms swing, only while it is on the move. */
+.mascot-robot[data-walking] .robot-leg-left { animation: robot-step .42s ease-in-out infinite; }
+.mascot-robot[data-walking] .robot-leg-right { animation: robot-step .42s ease-in-out -.21s infinite; }
+.mascot-robot[data-walking] .robot-figure { animation: robot-bob .21s ease-in-out infinite alternate; }
+.mascot-robot[data-walking] .robot-arm { animation: robot-swing .42s ease-in-out infinite alternate; }
+.mascot-robot[data-walking] .robot-arm-left { animation: robot-swing .42s ease-in-out infinite alternate-reverse; }
+
+/* Flying: rocket flames, arms held out, a gentle hover. */
+.mascot-robot[data-flying] .robot-flames { opacity: 1; }
+.mascot-robot[data-flying] .robot-flame { animation: robot-flicker .16s ease-in-out infinite alternate; }
+.mascot-robot[data-flying] .robot-shadow { opacity: 0; }
+.mascot-robot[data-flying] .robot-figure { animation: robot-hover .6s ease-in-out infinite alternate; }
+.mascot-robot[data-flying] .robot-arm { transform: rotate(-30deg); }
+.mascot-robot[data-flying] .robot-arm-left { transform: rotate(30deg); }
+
+/*
+ * Peekaboo (robotLife.js): it leans out of a bottom corner (data-peek) with its hands over its eyes, then swings
+ * them aside: boo! Off screen (data-away) it is also hidden from keyboards and screen readers.
+ * Kept before the ducking rules below, so that ducking still wins.
+ */
+.robot-peek { opacity: 0; pointer-events: none; }
+.robot-peek-left { transform-origin: 30px 82px; }
+.robot-peek-right { transform-origin: 70px 82px; }
+.robot-peek-left, .robot-peek-right { transition: transform .32s cubic-bezier(.34, 1.56, .64, 1); }
+.mascot-robot[data-peek] .robot-button { transform-origin: 50% 100%; }
+.mascot-robot[data-peek='right'] .robot-button { transform: rotate(-32deg); }
+.mascot-robot[data-peek='left'] .robot-button { transform: rotate(32deg); }
+.mascot-robot[data-peek] .robot-shadow { opacity: 0; }
+.mascot-robot[data-boo] .robot-peek { opacity: 1; }
+.mascot-robot[data-boo] .robot-button :is(.robot-arm, .robot-arm-left) { opacity: 0; }
+.mascot-robot[data-boo='open'] .robot-peek-left { transform: rotate(-40deg); }
+.mascot-robot[data-boo='open'] .robot-peek-right { transform: rotate(40deg); }
+.mascot-robot[data-boo='open'] .robot-eyes { animation: robot-boo .5s ease-out 1; }
+.mascot-robot[data-boo='open'] .robot-figure { animation: robot-boo-bounce .55s ease-out 1; }
+.mascot-robot[data-boo='open'] .robot-grin { opacity: 1; }
+.mascot-robot[data-boo='open'] .robot-smile { opacity: 0; }
+.mascot-robot[data-away] .robot-button { visibility: hidden; }
+@keyframes robot-boo { 40% { transform: scale(1.22); } }
+@keyframes robot-boo-bounce { 35% { transform: translateY(-7px) scale(1.03, .98); } }
+
+/*
+ * Over content (data-tucked) or over a form being typed in (data-ducked), it ducks below the edge of the window.
+ * Once out of sight it is also hidden from keyboards and screen readers.
+ */
+.mascot-robot:is([data-ducked], [data-tucked]) .robot-button {
+  transform: translateY(100vh); /* off screen even if it was flying */
+  visibility: hidden;
+  transition: transform .3s ease, visibility 0s .3s;
+}
+.mascot-robot:is([data-ducked], [data-tucked]) .robot-figure { pointer-events: none; }
+.mascot-robot[data-instant] .robot-button { transition: none; }
+
+/* Eyes and head follow the pointer (--look-x and --look-y run from -1 to 1). */
+.robot-pupils { transform: translate(calc(var(--look-x, 0) * 3.2px), calc(var(--look-y, 0) * 2.8px)); transition: transform .12s ease-out; }
+.robot-lean { transform: rotate(calc(var(--look-x, 0) * 4deg)); transition: transform .25s ease-out; }
+
+/* Its own routine: one action at a time, chosen by HomepageRobot.jsx. */
+.mascot-robot[data-action='greet'] .robot-arm { animation: robot-wave 1.4s ease-in-out .55s 1; }
+.mascot-robot[data-action='greet'] .robot-grin { opacity: 1; }
+.mascot-robot[data-action='greet'] .robot-smile { opacity: 0; }
+.mascot-robot[data-action='wave'] .robot-arm { animation: robot-wave 1.4s ease-in-out 1; }
+.mascot-robot[data-action='wave'] .robot-bulb { animation: robot-bulb .46s ease-in-out 3; }
+.mascot-robot[data-action='blink'] .robot-eyes { animation: robot-blink .32s ease-in-out 1; }
+.mascot-robot[data-action='look'] .robot-pupils { animation: robot-look 1.6s ease-in-out 1; }
+.mascot-robot[data-action='tilt'] .robot-head { animation: robot-tilt .9s ease-in-out 1; }
+.mascot-robot[data-action='hop'] .robot-figure { animation: robot-hop .7s ease-in-out 1; }
+.mascot-robot[data-action='hop'] .robot-shadow { animation: robot-shadow-hop .7s ease-in-out 1; }
+/* Bigger ones, played only when there is room around it. */
+.mascot-robot[data-action='dance'] .robot-figure { animation: robot-dance 2.4s ease-in-out 1; }
+.mascot-robot[data-action='dance'] .robot-arm { animation: robot-dance-right 2.4s ease-in-out 1; }
+.mascot-robot[data-action='dance'] .robot-arm-left { animation: robot-dance-left 2.4s ease-in-out 1; }
+.mascot-robot[data-action='jump'] .robot-figure { animation: robot-jump 1s ease-in-out 1; }
+.mascot-robot[data-action='jump'] .robot-arm { animation: robot-cheer-right 1s ease-in-out 1; }
+.mascot-robot[data-action='jump'] .robot-arm-left { animation: robot-cheer-left 1s ease-in-out 1; }
+.mascot-robot:is([data-action='jump'], [data-action='flip']) .robot-shadow { animation: robot-shadow-jump 1s ease-in-out 1; }
+.mascot-robot[data-action='flip'] .robot-figure { transform-origin: 50px 72px; animation: robot-flip 1.1s ease-in-out 1; }
+.mascot-robot:is([data-action='dance'], [data-action='jump'], [data-action='flip']) .robot-grin { opacity: 1; }
+.mascot-robot:is([data-action='dance'], [data-action='jump'], [data-action='flip']) .robot-smile { opacity: 0; }
+
+/* ---- Reactions to the visitor (robotLife.js, lib/mascot/reactions.js) ---- */
+.robot-sleep-eyes, .robot-yawn, .robot-snore, .robot-zzz, .robot-spirals, .robot-dizzy-mouth { opacity: 0; }
+.robot-zzz { pointer-events: none; }
+.robot-spiral-left { transform-origin: 37px 43px; }
+.robot-spiral-right { transform-origin: 63px 43px; }
+.robot-yawn { transform-box: fill-box; transform-origin: center; }
+
+/* Welcome back: a happy wave and two little hops. */
+.mascot-robot[data-action='welcome'] .robot-arm { animation: robot-wave 1.4s ease-in-out 1; }
+.mascot-robot[data-action='welcome'] .robot-figure { animation: robot-hop .7s ease-in-out 2; }
+.mascot-robot[data-action='welcome'] .robot-bulb { animation: robot-bulb .46s ease-in-out 3; }
+.mascot-robot[data-action='welcome'] .robot-grin { opacity: 1; }
+.mascot-robot[data-action='welcome'] .robot-smile { opacity: 0; }
+
+/* Secret dance. The full one spins and jumps, so it needs room; the small one keeps its feet still. */
+.mascot-robot[data-action='secret'] .robot-figure { transform-origin: 50px 90px; animation: robot-secret 3.2s ease-in-out 1; }
+.mascot-robot[data-action='secret'] .robot-shadow { animation: robot-secret-shadow 3.2s ease-in-out 1; }
+.mascot-robot:is([data-action='secret'], [data-action='secret-small']) .robot-arm { animation: robot-secret-right .8s ease-in-out 4; }
+.mascot-robot:is([data-action='secret'], [data-action='secret-small']) .robot-arm-left { animation: robot-secret-left .8s ease-in-out -.4s 4; }
+.mascot-robot:is([data-action='secret'], [data-action='secret-small']) .robot-bulb { animation: robot-bulb .4s ease-in-out 8; }
+.mascot-robot[data-action='secret-small'] .robot-head { animation: robot-secret-head .8s ease-in-out 4; }
+.mascot-robot:is([data-action='secret'], [data-action='secret-small']) .robot-grin { opacity: 1; }
+.mascot-robot:is([data-action='secret'], [data-action='secret-small']) .robot-smile { opacity: 0; }
+
+/* Dizzy: spiral eyes, a wobbling head and a wavy mouth. */
+.mascot-robot[data-action='dizzy'] .robot-spirals { opacity: 1; }
+.mascot-robot[data-action='dizzy'] .robot-spiral { animation: robot-spin .7s linear infinite; }
+.mascot-robot[data-action='dizzy'] .robot-head { animation: robot-wobble 2.6s ease-in-out 1; }
+.mascot-robot[data-action='dizzy'] .robot-dizzy-mouth { opacity: 1; }
+.mascot-robot[data-action='dizzy'] :is(.robot-pupils, .robot-smile) { opacity: 0; }
+
+/* Waking: a startled double blink and a little jolt. */
+.mascot-robot[data-action='wake'] .robot-eyes { animation: robot-startle .9s ease-out 1; }
+.mascot-robot[data-action='wake'] .robot-figure { animation: robot-jolt .9s ease-out 1; }
+
+/* Nap: a yawn, then it nods off with its head drooping and "z z z" floating up. */
+.mascot-robot[data-action='yawn'] .robot-yawn { animation: robot-yawn-mouth 1.8s ease-in-out 1; }
+.mascot-robot[data-action='yawn'] .robot-smile { opacity: 0; }
+/* The eyes close for the middle of the yawn. */
+.mascot-robot[data-action='yawn'] .robot-eyes { animation: robot-eyes-shut 1.8s steps(1, end) 1; }
+.mascot-robot[data-action='yawn'] .robot-sleep-eyes { animation: robot-lids 1.8s steps(1, end) 1; }
+.mascot-robot[data-action='yawn'] .robot-head { animation: robot-yawn-head 1.8s ease-in-out 1; }
+.mascot-robot[data-action='yawn'] .robot-arm { animation: robot-stretch 1.8s ease-in-out 1; }
+.mascot-robot[data-sleeping] :is(.robot-eyes, .robot-smile) { opacity: 0; }
+.mascot-robot[data-sleeping] :is(.robot-sleep-eyes, .robot-snore, .robot-zzz) { opacity: 1; }
+.mascot-robot[data-sleeping] .robot-head { transform: translateY(2.5px) rotate(8deg); transition: transform .6s ease; }
+/* The breathing and floating stop after half a minute, so nothing keeps moving while nobody is there. */
+.mascot-robot[data-sleeping] .robot-figure { animation: robot-breathe 2.8s ease-in-out 11; }
+.mascot-robot[data-sleeping] .robot-z { animation: robot-float 2.8s ease-in-out 11 backwards; }
+.mascot-robot[data-sleeping] .robot-z:nth-child(2) { animation-delay: .35s; }
+.mascot-robot[data-sleeping] .robot-z:nth-child(3) { animation-delay: .7s; }
+
+
+/* Pointed at or focused: it perks up, grins and waves, so it is clearly something to click. */
+.mascot-robot .robot-button:is(:hover, :focus-visible) .robot-art { transform: scale(1.07); }
+/* Not while peeking: growing would slide what is being pointed at out from under the pointer. */
+.mascot-robot[data-peek] .robot-button:is(:hover, :focus-visible) .robot-art { transform: none; }
+.mascot-robot .robot-button:is(:hover, :focus-visible) .robot-arm { animation: robot-wave 1.4s ease-in-out infinite; }
+.mascot-robot .robot-button:is(:hover, :focus-visible) .robot-grin { opacity: 1; }
+.mascot-robot .robot-button:is(:hover, :focus-visible) .robot-smile { opacity: 0; }
+/* While dizzy, pointing at it must not paint a grin over the dizzy mouth. */
+.mascot-robot[data-action='dizzy'] .robot-button:is(:hover, :focus-visible) .robot-grin { opacity: 0; }
+
+/* Clicked: a happy hop, a wave, then it drops off the screen. (After the hover rules, so these win.) */
+.mascot-robot[data-phase='leaving'] { animation: robot-bye .7s ease-in both; }
+.mascot-robot[data-phase='leaving'] .robot-figure { pointer-events: none; }
+.mascot-robot[data-phase='leaving'] .robot-button .robot-arm { animation: robot-goodbye .7s ease-in-out both; }
+.mascot-robot[data-phase='leaving'] .robot-button :is(.robot-eyes, .robot-smile) { opacity: 0; }
+.mascot-robot[data-phase='leaving'] .robot-button :is(.robot-happy, .robot-grin) { opacity: 1; }
+
+@keyframes robot-pop { from { transform: translateY(150%); } 62% { transform: translateY(-12px); } 82% { transform: translateY(3px); } to { transform: translateY(0); } }
+@keyframes robot-bye {
+  28% { transform: translateY(-26px) rotate(-9deg); }
+  48% { transform: translateY(-26px) rotate(8deg); }
+  80% { opacity: 1; }
+  to { transform: translateY(170px); opacity: 0; }
+}
+/* Between these two angles the raised hand stays clear of the head. */
+@keyframes robot-wave { 20%, 52%, 80% { transform: rotate(-100deg); } 36%, 66% { transform: rotate(-70deg); } }
+@keyframes robot-goodbye { 25%, 65% { transform: rotate(-100deg); } 45%, to { transform: rotate(-70deg); } }
+@keyframes robot-blink { 45%, 55% { transform: scaleY(.1); } }
+@keyframes robot-look { 20%, 40% { transform: translate(-3.4px, 0); } 62%, 82% { transform: translate(3.4px, 0); } }
+@keyframes robot-tilt { 35% { transform: rotate(-10deg); } 70% { transform: rotate(6deg); } }
+@keyframes robot-hop {
+  12% { transform: scale(1.05, .94); }
+  40% { transform: translateY(-15px) scale(.97, 1.04); }
+  62% { transform: scale(1.04, .96); }
+  80% { transform: translateY(-4px); }
+}
+@keyframes robot-shadow-hop { 40% { transform: scale(.65, .8); } }
+@keyframes robot-bulb { 50% { transform: scale(1.4); } }
+@keyframes robot-step { 25% { transform: translateY(-6px); } 50% { transform: translateY(0); } }
+@keyframes robot-bob { to { transform: translateY(-3px); } }
+@keyframes robot-swing { from { transform: rotate(18deg); } to { transform: rotate(-18deg); } }
+@keyframes robot-flicker { from { transform: scale(.85, .7); } to { transform: scale(1.05, 1.15); } }
+@keyframes robot-hover { to { transform: translateY(-5px); } }
+@keyframes robot-dance {
+  12%, 62% { transform: rotate(-10deg); }
+  25%, 50%, 75% { transform: translateY(-6px); }
+  37%, 87% { transform: rotate(10deg); }
+}
+@keyframes robot-dance-right { 12%, 62% { transform: rotate(-105deg); } 37%, 87% { transform: rotate(-60deg); } }
+@keyframes robot-dance-left { 12%, 62% { transform: rotate(60deg); } 37%, 87% { transform: rotate(105deg); } }
+@keyframes robot-jump {
+  14% { transform: scale(1.1, .88); }
+  42% { transform: translateY(-38px) scale(.95, 1.06); }
+  56% { transform: translateY(-38px); }
+  80% { transform: scale(1.1, .88); }
+  90% { transform: translateY(-3px); }
+}
+@keyframes robot-cheer-right { 30%, 70% { transform: rotate(-108deg); } }
+@keyframes robot-cheer-left { 30%, 70% { transform: rotate(108deg); } }
+@keyframes robot-shadow-jump { 42%, 56% { transform: scale(.5, .7); } }
+@keyframes robot-secret {
+  8% { transform: rotate(-12deg); }
+  16% { transform: rotate(12deg); }
+  26% { transform: translateY(-18px) rotate(0deg); }
+  34% { transform: translateY(0) scale(1.08, .92); }
+  46% { transform: translateY(-10px) scaleX(.06); } /* turning edge-on reads as a spin, and never mirrors the N */
+  58% { transform: translateY(0) scaleX(1); }
+  68% { transform: rotate(-12deg); }
+  76% { transform: rotate(12deg); }
+  86% { transform: translateY(-18px) scale(.97, 1.04); }
+  94% { transform: translateY(0) scale(1.05, .95); }
+}
+@keyframes robot-secret-shadow { 26%, 86% { transform: scale(.6, .75); } 46% { transform: scale(.3, .8); } }
+@keyframes robot-secret-right { 50% { transform: rotate(-110deg); } }
+@keyframes robot-secret-left { 50% { transform: rotate(110deg); } }
+@keyframes robot-secret-head { 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+@keyframes robot-spin { to { transform: rotate(360deg); } }
+@keyframes robot-wobble { 12% { transform: rotate(-9deg); } 30% { transform: rotate(8deg); } 48% { transform: rotate(-7deg); } 66% { transform: rotate(5deg); } 84% { transform: rotate(-3deg); } }
+@keyframes robot-startle {
+  0% { transform: scaleY(.1); }
+  18% { transform: scale(1.2); }
+  36% { transform: scale(1.18, .15); }
+  52% { transform: scale(1.18); }
+  70% { transform: scaleY(.15); }
+  84% { transform: none; }
+}
+@keyframes robot-jolt { 18% { transform: translateY(-8px) scale(.97, 1.04); } 38% { transform: translateY(0) scale(1.03, .97); } 55% { transform: none; } }
+@keyframes robot-yawn-mouth { 0% { opacity: 0; transform: scale(.4); } 25%, 75% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.5); } }
+@keyframes robot-eyes-shut { 0%, 82% { opacity: 1; } 22% { opacity: 0; } }
+@keyframes robot-lids { 0%, 82% { opacity: 0; } 22% { opacity: 1; } }
+@keyframes robot-yawn-head { 35%, 70% { transform: translateY(-1.5px) rotate(-7deg); } }
+@keyframes robot-stretch { 30%, 70% { transform: rotate(-96deg); } }
+@keyframes robot-breathe { 50% { transform: scale(1.015, .975); } }
+@keyframes robot-float { 0% { opacity: 0; transform: translate(-2.5px, 4px); } 30%, 75% { opacity: 1; } 100% { opacity: 0; transform: translate(2px, -3px); } }
+@keyframes robot-flip {
+  14% { transform: translateY(2px) rotate(0deg); }
+  42% { transform: translateY(-34px) rotate(130deg); }
+  62% { transform: translateY(-34px) rotate(255deg); }
+  86%, 100% { transform: translateY(0) rotate(360deg); }
+}
+
+.mascot-robot[data-still], .mascot-robot[data-still] * { animation: none !important; transition: none !important; }
+@media print { .mascot-robot { display: none; } }
+
+/* On-load stagger for hero content. */
+.rise-group > *, .rise { animation: rise .4s cubic-bezier(.22, 1, .36, 1) both; animation-delay: var(--rise-delay, 0s); }
+.rise-group > :nth-child(2) { animation-delay: calc(var(--rise-delay, 0s) + .06s); }
+.rise-group > :nth-child(3) { animation-delay: calc(var(--rise-delay, 0s) + .12s); }
+.rise-group > :nth-child(4) { animation-delay: calc(var(--rise-delay, 0s) + .18s); }
+.rise-group > :nth-child(n + 5) { animation-delay: calc(var(--rise-delay, 0s) + .24s); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/*
+ * Scroll reveals (hooks/useReveal.js). Nothing is hidden until the app marks it, so content stays visible if
+ * scripts or the observer fail. Keyboard focus and printing always show it.
+ */
+[data-reveal-state='pending'] { opacity: 0; translate: 0 10px; }
+[data-reveal-state='pending']:focus-within { opacity: 1; translate: none; }
+[data-reveal-state='in'] {
+  animation: reveal-in .4s cubic-bezier(.22, 1, .36, 1) backwards;
+  animation-delay: calc(var(--reveal-delay, 0s) + var(--reveal-step, 0) * .06s);
+}
+@keyframes reveal-in { from { opacity: 0; translate: 0 10px; } }
+@media print { [data-reveal-state] { opacity: 1; translate: none; animation: none; } }
+
+/* "Hot" tag in the menu: white on deep orange and red (at least 5:1), with a short glow on load. */
+.hot-badge {
+  display: inline-flex; align-items: center; gap: 2px; border-radius: 9999px; padding: 1px 6px 1px 4px;
+  background: linear-gradient(100deg, #c2410c, #be123c); color: #fff; font-size: 10px; font-weight: 700;
+  line-height: 14px; letter-spacing: .05em; text-transform: uppercase;
+  animation: hot-glow 1.8s ease-in-out .6s 3;
+}
+.hot-badge svg { animation: hot-flicker .9s ease-in-out .6s 6; transform-origin: 50% 90%; }
+@keyframes hot-glow { 50% { box-shadow: 0 0 0 3px rgb(234 88 12 / .22), 0 0 14px 1px rgb(234 88 12 / .45); } }
+@keyframes hot-flicker { 30% { transform: scale(1.18, 1.25) rotate(-6deg); } 65% { transform: scale(.94, 1.05) rotate(5deg); } }
+
+/*
+ * The film on the AI pages (media/FeatureVideo): a small control bar, a large play button when it is waiting,
+ * and a spinner while it buffers. The bar stays while muted; with sound on it fades until pointed at or focused.
+ */
+.feature-video video { cursor: pointer; }
+.feature-video:fullscreen { display: grid; place-items: center; border: 0; border-radius: 0; }
+.feature-video:fullscreen video { max-height: 100vh; }
+.feature-video-bar {
+  position: absolute; right: .625rem; bottom: .75rem; display: flex; align-items: center; gap: .125rem; padding: .25rem;
+  border-radius: 9999px; background: rgb(0 0 0 / .62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: opacity .25s ease, translate .25s ease;
+}
+.feature-video-bar button {
+  display: inline-flex; min-width: 2.5rem; height: 2.5rem; align-items: center; justify-content: center; gap: .375rem;
+  padding: 0 .75rem; border-radius: 9999px; color: #fff; font-size: .8125rem; font-weight: 600;
+}
+.feature-video-bar button:hover { background: rgb(255 255 255 / .16); }
+.feature-video-bar button:focus-visible, .feature-video-big:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+/* On phones the picture is small, so the controls sit just under it instead of over it. */
+@media (max-width: 639.98px) {
+  .feature-video { --bar: 3rem; }
+  .feature-video-bar { position: static; justify-content: center; border-radius: 0; background: #0b0f0e; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .feature-video:fullscreen .feature-video-bar { width: 100%; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .feature-video:not(:hover, :focus-within) .feature-video-bar[data-autohide] { opacity: 0; translate: 0 .375rem; }
+}
+/* Centred on the picture (on phones the controls below it do not count). */
+.feature-video-big {
+  position: absolute; top: calc(50% - var(--bar, 0px) / 2); left: 50%; display: grid; width: 4rem; height: 4rem; place-items: center;
+  translate: -50% -50%; border-radius: 9999px; background: rgb(0 0 0 / .62); color: #fff; transition: scale .2s ease, background-color .2s ease;
+}
+.feature-video-big:hover { scale: 1.07; background: rgb(0 0 0 / .78); }
+.feature-video-spinner {
+  position: absolute; top: calc(50% - var(--bar, 0px) / 2 - 1.25rem); left: calc(50% - 1.25rem); width: 2.5rem; height: 2.5rem;
+  border: 3px solid rgb(255 255 255 / .28); border-top-color: #fff; border-radius: 9999px; animation: video-spin .9s linear infinite;
+}
+@keyframes video-spin { to { rotate: 360deg; } }
+@media print { .feature-video-bar, .feature-video-big { display: none; } }
+
+/* FAQ accordion (<details>): accent bar and a plus that turns into a cross. */
+.faq::before {
+  content: ''; position: absolute; top: 1rem; bottom: 1rem; left: 0; width: 2px; border-radius: 2px;
+  background: rgb(var(--primary)); transform: scaleY(0); transform-origin: top;
+  transition: transform .25s cubic-bezier(.22, 1, .36, 1);
+}
+.faq[open]::before { transform: scaleY(1); }
+.faq-sign { transition: rotate .2s ease; }
+.faq[open] .faq-sign { rotate: 45deg; }
+.faq[open] .faq-answer { animation: rise .25s cubic-bezier(.22, 1, .36, 1) backwards; }
+
+/* Reduced motion: everything is visible at once and decorative movement is off. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal-state] { opacity: 1; translate: none; animation: none; }
+  .faq::before, .faq-sign { transition: none; }
+  .hot-badge, .hot-badge svg { animation: none; }
+  .feature-video-bar, .feature-video-big { transition: none; }
+  .feature-video-spinner { animation: none; }
+  .faq[open] .faq-answer { animation: none; }
+  .rise-group > *, .rise { animation: none; }
+  .mascot-robot, .mascot-robot * { animation: none !important; transition: none !important; }
+  /* header symbol and About illustration appear complete */
+  .brand-stroke, .build :is(.build-fade, .build-rise, .build-draw, .build-pop, .build-check path) { animation: none; }
+  .card-interactive, .card-interactive:hover, .card-interactive:focus-visible, .card-interactive:has(:focus-visible),
+  .nudge, .group:hover .nudge, .group:focus-visible .nudge, .group:has(:focus-visible) .nudge {
+    translate: none; transition-duration: .01ms;
+  }
+}

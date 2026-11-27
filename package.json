@@ -1,0 +1,34 @@
+{
+  "name": "novix-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs && node scripts/verify-dist.mjs",
+    "build:release": "RELEASE=1 npm run build",
+    "preview": "vite preview",
+    "check:deploy": "node scripts/check-deploy.mjs",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "test:mascot": "node --test \"tests/*.test.mjs\""
+  },
+  "dependencies": {
+    "@rive-app/canvas-lite": "2.54.0",
+    "@rive-app/react-canvas-lite": "4.41.0",
+    "framer-motion": "^14.14.0",
+    "lucide-react": "^1.81.0",
+    "react": "19.2",
+    "react-dom": "19.2",
+    "react-router-dom": "^7.18.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "autoprefixer": "^10.7.0",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^3.4.19",
+    "vite": "^8.3.8"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

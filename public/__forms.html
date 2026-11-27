@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="x-form-definition" content="netlify-forms-blueprint" />
+    <title>Enquiry form definition</title>
+  </head>
+  <body>
+    <!--
+      Netlify reads this form when it deploys: that is how it learns the form and its fields. Visitors never see this
+      page; the site's enquiry form sends to it with JavaScript (src/lib/submitLead.js).
+      Netlify drops any field that is not listed here, so keep the names the same as ENQUIRY_FIELDS in that file.
+    -->
+    <form name="enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="enquiry" />
+      <input type="email" name="email" />
+      <textarea name="message"></textarea>
+      <input type="text" name="name" />
+      <input type="tel" name="phone" />
+      <input type="text" name="service" />
+      <input type="text" name="topic" />
+      <input type="text" name="context" />
+      <input type="text" name="page" />
+      <input type="text" name="bot-field" />
+    </form>
+  </body>
+</html>

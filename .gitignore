@@ -1,0 +1,34 @@
+# Installed packages and build output
+node_modules/
+dist/
+dist-ssr/
+.vite/
+coverage/
+
+# Environment variables and keys. .env.example is safe to share: it has no secrets.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Netlify
+.netlify/
+
+# Logs
+*.log
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# AI assistant files on this computer (not part of the website)
+.claude/
+skills-lock.json
+
+# Local backups and working files
+held/
+design-review/
