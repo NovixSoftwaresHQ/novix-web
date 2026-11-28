@@ -1,6 +1,7 @@
 # Novix Softwares website
 
 
+
 Rebranded on 26 Nov 2026: Novix Softwares, novixsoftwares.com, Nova Square, Greater Noida.
 
 React, React Router, Tailwind CSS 3, Framer Motion and Lucide, built with Vite.
